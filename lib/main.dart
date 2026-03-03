@@ -26,7 +26,7 @@ class TindPetsApp extends StatelessWidget {
     return MaterialApp(
       title: 'TindPets',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.darkTheme, // Switched to Dark Theme
+      theme: AppTheme.immersiveTheme, // Fixed theme name
       home: const DiscoveryScreen(),
     );
   }

@@ -73,7 +73,7 @@ class PetProfileScreen extends StatelessWidget {
       ),
       actions: [
         Padding(
-          padding: const EdgeInsets.right(16.0),
+          padding: const EdgeInsets.only(right: 16.0),
           child: Center(
             child: GlassContainer(
               borderRadius: 50,
