@@ -7,6 +7,8 @@ import '../providers/pet_provider.dart';
 import '../widgets/pet_card.dart';
 import '../theme/app_theme.dart';
 import 'pet_profile_screen.dart';
+import 'tutor_profile_screen.dart';
+import 'chat_list_screen.dart';
 
 class DiscoveryScreen extends StatefulWidget {
   const DiscoveryScreen({super.key});
@@ -107,7 +109,7 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const TutorProfileScreen()),
+                MaterialPageRoute(builder: (context) => TutorProfileScreen()),
               );
             },
             child: const GlassContainer(
@@ -128,7 +130,7 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ChatListScreen()),
+                MaterialPageRoute(builder: (context) => ChatListScreen()),
               );
             },
             child: const GlassContainer(
