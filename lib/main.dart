@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'theme/app_theme.dart';
 import 'providers/pet_provider.dart';
-import 'screens/discovery_screen.dart';
+import 'screens/welcome_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,8 +26,8 @@ class TindPetsApp extends StatelessWidget {
     return MaterialApp(
       title: 'TindPets',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.immersiveTheme, // Fixed theme name
-      home: const DiscoveryScreen(),
+      theme: AppTheme.immersiveTheme,
+      home: const WelcomeScreen(),
     );
   }
 }

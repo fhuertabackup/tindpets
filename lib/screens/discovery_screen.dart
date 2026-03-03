@@ -103,10 +103,18 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const GlassContainer(
-            shape: BoxShape.circle,
-            padding: EdgeInsets.all(10),
-            child: Icon(Icons.person_outline, color: Colors.white, size: 20),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const TutorProfileScreen()),
+              );
+            },
+            child: const GlassContainer(
+              shape: BoxShape.circle,
+              padding: EdgeInsets.all(10),
+              child: Icon(Icons.person_outline, color: Colors.white, size: 20),
+            ),
           ),
           const Text(
             'TindPets',
@@ -116,10 +124,18 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
               letterSpacing: -1,
             ),
           ),
-          const GlassContainer(
-            shape: BoxShape.circle,
-            padding: EdgeInsets.all(10),
-            child: Icon(Icons.chat_bubble_outline, color: Colors.white, size: 20),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ChatListScreen()),
+              );
+            },
+            child: const GlassContainer(
+              shape: BoxShape.circle,
+              padding: EdgeInsets.all(10),
+              child: Icon(Icons.chat_bubble_outline, color: Colors.white, size: 20),
+            ),
           ),
         ],
       ),
