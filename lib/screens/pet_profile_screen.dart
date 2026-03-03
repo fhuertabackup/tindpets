@@ -1,4 +1,5 @@
 
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../models/pet.dart';
@@ -13,218 +14,206 @@ class PetProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: CustomScrollView(
-        slivers: [
-          _buildSliverAppBar(context),
-          SliverToBoxAdapter(
-            child: _buildProfileContent(context),
+      body: Stack(
+        children: [
+          // 1. Background (Blurred Imagery)
+          Positioned.fill(
+            child: ImageFiltered(
+              imageFilter: ImageFilter.blur(sigmaX: 50, sigmaY: 50),
+              child: Image.network(
+                pet.imageUrls.first,
+                fit: BoxFit.cover,
+                color: Colors.black.withOpacity(0.3),
+                colorBlendMode: BlendMode.darken,
+              ),
+            ),
+          ),
+          
+          // 2. Main Content
+          SafeArea(
+            child: CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                _buildTransparentHeader(context),
+                SliverToBoxAdapter(
+                  child: _buildImmersiveContent(context),
+                ),
+              ],
+            ),
+          ),
+          
+          // 3. Floating Bottom Action (Minimal)
+          Positioned(
+            bottom: 30,
+            left: 24,
+            right: 24,
+            child: _buildMinimalFooter(context),
           ),
         ],
       ),
-      bottomNavigationBar: _buildActionBottomBar(context),
     );
   }
 
-  Widget _buildSliverAppBar(BuildContext context) {
+  Widget _buildTransparentHeader(BuildContext context) {
     return SliverAppBar(
-      expandedHeight: 500,
-      floating: false,
-      pinned: true,
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.transparent,
+      elevation: 0,
       leading: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: GlassContainer(
-          borderRadius: 50,
-          padding: const EdgeInsets.all(8),
-          child: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-            onPressed: () => Navigator.pop(context),
+        padding: const EdgeInsets.only(left: 16.0),
+        child: Center( // Center Icon in Glass
+          child: GlassContainer(
+            shape: BoxShape.circle,
+            padding: const EdgeInsets.all(10), // Reduced to match icon size
+            child: GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: const Icon(Icons.arrow_back_ios_new, size: 18, color: Colors.white),
+            ),
           ),
         ),
       ),
       actions: [
         Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: GlassContainer(
-            borderRadius: 12,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: const Center(
-              child: Text(
-                'Edit Profile',
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-              ),
+          padding: const EdgeInsets.right(16.0),
+          child: Center(
+            child: GlassContainer(
+              borderRadius: 50,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: const Text('Edit Profile', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
             ),
           ),
         ),
       ],
+      expandedHeight: 400,
       flexibleSpace: FlexibleSpaceBar(
-        background: Hero(
-          tag: 'pet-${pet.id}',
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              Image.network(pet.imageUrls.first, fit: BoxFit.cover),
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Colors.black.withOpacity(0.4), Colors.black],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    stops: const [0.6, 1.0],
-                  ),
-                ),
-              ),
-            ],
+        background: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Hero(
+            tag: 'pet-${pet.id}',
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: Image.network(pet.imageUrls.first, fit: BoxFit.cover),
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildProfileContent(BuildContext context) {
+  Widget _buildImmersiveContent(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          const Text(
+            '52.4k Supporters',
+            style: TextStyle(color: Colors.white70, fontSize: 13, letterSpacing: 1),
+          ),
+          const SizedBox(height: 8),
           Text(
             pet.name,
-            style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 42, fontWeight: FontWeight.bold, letterSpacing: -1),
           ),
-          Text(
-            '@${pet.name.toLowerCase()}_pet',
-            style: const TextStyle(color: Colors.white60, fontSize: 16),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 12,
+            children: [
+              _buildSimpleChip('Pet Coach'),
+              _buildSimpleChip(pet.breed),
+            ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 32),
           Text(
             pet.description,
-            style: const TextStyle(color: Colors.white70, fontSize: 16, height: 1.5),
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 16, height: 1.6),
           ),
-          const SizedBox(height: 24),
-          _buildStatsSection(),
-          const SizedBox(height: 32),
-          const Text(
-            'Galería',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 16),
-          _buildGallery(context),
-          const SizedBox(height: 24),
-          _buildRecommendationBox(),
-          const SizedBox(height: 100),
+          const SizedBox(height: 48),
+          _buildOrganicStats(),
+          const SizedBox(height: 48),
+          _buildGalleryRow(),
+          const SizedBox(height: 120),
         ],
       ),
     );
   }
 
-  Widget _buildStatsSection() {
+  Widget _buildSimpleChip(String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(label, style: const TextStyle(fontSize: 12, color: Colors.white70)),
+    );
+  }
+
+  Widget _buildOrganicStats() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _buildStatItem('521', 'Followers'),
-        _buildStatItem('345', 'Following'),
-        _buildStatItem('566', 'Matches'),
+        _buildStatColumn('Energy', 'High'),
+        _buildStatColumn('Age', '${pet.age} y'),
+        _buildStatColumn('Match', '98%'),
       ],
     );
   }
 
-  Widget _buildStatItem(String val, String label) {
+  Widget _buildStatColumn(String label, String value) {
     return Column(
       children: [
-        Text(val, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-        Text(label, style: const TextStyle(color: Colors.white60, fontSize: 12)),
+        Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        Text(label, style: const TextStyle(color: Colors.white38, fontSize: 12)),
       ],
     );
   }
 
-  Widget _buildGallery(BuildContext context) {
+  Widget _buildGalleryRow() {
     return SizedBox(
-      height: 120,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: 4,
-        itemBuilder: (context, index) => Container(
-          margin: const EdgeInsets.only(right: 12),
-          width: 120,
+      height: 70,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(4, (index) => Container(
+          margin: const EdgeInsets.symmetric(horizontal: 6),
+          width: 70,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
-            image: DecorationImage(
-              image: NetworkImage(pet.imageUrls[index % pet.imageUrls.length]),
+            image: const DecorationImage(
+              image: NetworkImage('https://images.unsplash.com/photo-1513245543132-31f507417b26?q=80&w=200'),
               fit: BoxFit.cover,
             ),
           ),
+        )),
+      ),
+    );
+  }
+
+  Widget _buildMinimalFooter(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: GlassContainer(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            opacity: 0.2,
+            blur: 40,
+            borderRadius: 100,
+            child: const Center(
+              child: Text(
+                'Get Start Match',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+              ),
+            ),
+          ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildRecommendationBox() {
-    return GlassContainer(
-      padding: const EdgeInsets.all(20),
-      child: Row(
-        children: [
-          const CircleAvatar(
-            backgroundImage: NetworkImage('https://i.pravatar.cc/150?u=vet'),
-            radius: 25,
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Recomendación del Vet',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  'Este perfil tiene sus vacunas al día y un temperamento ideal.',
-                  style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 12),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionBottomBar(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.5),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Container(
-              height: 56,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Colors.orange, AppTheme.primaryColor],
-                ),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: const Center(
-                child: Text(
-                  'Follow',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 16),
-          _buildCircleAction(context, Icons.mail_outline),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCircleAction(BuildContext context, IconData icon) {
-    return GlassContainer(
-      borderRadius: 100,
-      padding: const EdgeInsets.all(16),
-      child: Icon(icon, color: Colors.white),
+        const SizedBox(width: 16),
+        GlassContainer(
+          shape: BoxShape.circle,
+          padding: const EdgeInsets.all(18),
+          child: const Icon(Icons.mail_outline, color: Colors.white, size: 24),
+        ),
+      ],
     );
   }
 }

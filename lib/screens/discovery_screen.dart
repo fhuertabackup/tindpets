@@ -1,4 +1,5 @@
 
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +17,7 @@ class DiscoveryScreen extends StatefulWidget {
 
 class _DiscoveryScreenState extends State<DiscoveryScreen> {
   final CardSwiperController controller = CardSwiperController();
+  int activeIndex = 0;
 
   @override
   void dispose() {
@@ -30,106 +32,122 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: const Text('TindPets'),
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: GlassContainer(
-            borderRadius: 50,
-            padding: const EdgeInsets.all(8),
-            child: const Icon(Icons.person_outline, size: 20),
-          ),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: GlassContainer(
-              borderRadius: 50,
-              padding: const EdgeInsets.all(8),
-              child: const Icon(Icons.chat_bubble_outline, size: 20),
+      body: Stack(
+        children: [
+          // 1. Dynamic Immersive Background (Blurred Pet Photo)
+          if (pets.isNotEmpty && activeIndex < pets.length)
+            Positioned.fill(
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 500),
+                child: ImageFiltered(
+                  key: ValueKey(pets[activeIndex].id),
+                  imageFilter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
+                  child: Image.network(
+                    pets[activeIndex].imageUrls.first,
+                    fit: BoxFit.cover,
+                    color: Colors.black.withOpacity(0.4),
+                    colorBlendMode: BlendMode.darken,
+                  ),
+                ),
+              ),
+            ),
+            
+          // 2. Main Discovery UI
+          SafeArea(
+            child: Column(
+              children: [
+                _buildMinimalAppBar(),
+                Expanded(
+                  child: pets.isEmpty
+                      ? const Center(child: Text('No hay más mascotas 🐾'))
+                      : CardSwiper(
+                          controller: controller,
+                          cardsCount: pets.length,
+                          onSwipe: (previousIndex, currentIndex, direction) {
+                            setState(() {
+                              activeIndex = currentIndex ?? 0;
+                            });
+                            return true;
+                          },
+                          cardBuilder: (context, index, horizontalOffsetPercentage, verticalOffsetPercentage) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                              child: PetCard(
+                                pet: pets[index],
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => PetProfileScreen(pet: pets[index]),
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                ),
+                _buildMinimalActionButtons(),
+                const SizedBox(height: 32),
+              ],
             ),
           ),
         ],
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          color: Colors.black,
-        ),
-        child: Column(
-          children: [
-            const SizedBox(height: 100),
-            Expanded(
-              child: pets.isEmpty
-                  ? const Center(child: Text('No hay más mascotas por ahora 🐾'))
-                  : CardSwiper(
-                      controller: controller,
-                      cardsCount: pets.length,
-                      onSwipe: (previousIndex, currentIndex, direction) {
-                        return true;
-                      },
-                      cardBuilder: (context, index, horizontalOffsetPercentage, verticalOffsetPercentage) {
-                        return Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: PetCard(
-                            pet: pets[index],
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => PetProfileScreen(pet: pets[index]),
-                                ),
-                              );
-                            },
-                          ),
-                        );
-                      },
-                    ),
+    );
+  }
+
+  Widget _buildMinimalAppBar() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const GlassContainer(
+            shape: BoxShape.circle,
+            padding: EdgeInsets.all(10),
+            child: Icon(Icons.person_outline, color: Colors.white, size: 20),
+          ),
+          const Text(
+            'TindPets',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              letterSpacing: -1,
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 32.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildCircleAction(
-                    icon: Icons.close,
-                    color: Colors.white,
-                    bgColor: Colors.white.withOpacity(0.1),
-                    onTap: () => controller.swipe(CardSwiperDirection.left),
-                  ),
-                  _buildCircleAction(
-                    icon: Icons.star,
-                    color: Colors.blueAccent,
-                    bgColor: Colors.blueAccent.withOpacity(0.1),
-                    onTap: () {},
-                  ),
-                  _buildCircleAction(
-                    icon: Icons.favorite,
-                    color: AppTheme.primaryColor,
-                    bgColor: AppTheme.primaryColor.withOpacity(0.1),
-                    onTap: () => controller.swipe(CardSwiperDirection.right),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
+          const GlassContainer(
+            shape: BoxShape.circle,
+            padding: EdgeInsets.all(10),
+            child: Icon(Icons.chat_bubble_outline, color: Colors.white, size: 20),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildCircleAction({
-    required IconData icon,
-    required Color color,
-    required Color bgColor,
-    required VoidCallback onTap,
-  }) {
+  Widget _buildMinimalActionButtons() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 48),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _buildAction(Icons.close, Colors.white60, () => controller.swipe(CardSwiperDirection.left)),
+          _buildAction(Icons.star, Colors.blueAccent, () {}),
+          _buildAction(Icons.favorite, AppTheme.primaryColor, () => controller.swipe(CardSwiperDirection.right)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAction(IconData icon, Color color, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
       child: GlassContainer(
-        borderRadius: 100,
-        padding: const EdgeInsets.all(20),
-        color: bgColor,
-        child: Icon(icon, color: color, size: 30),
+        shape: BoxShape.circle,
+        padding: const EdgeInsets.all(18),
+        opacity: 0.15,
+        child: Icon(icon, color: color, size: 26),
       ),
     );
   }
