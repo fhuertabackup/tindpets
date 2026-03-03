@@ -6,155 +6,150 @@ import '../theme/app_theme.dart';
 
 class PetCard extends StatelessWidget {
   final Pet pet;
+  final VoidCallback? onTap;
 
-  const PetCard({super.key, required this.pet});
+  const PetCard({super.key, required this.pet, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Stack(
-          children: [
-            // Image
-            Positioned.fill(
-              child: Image.network(
-                pet.imageUrls.first,
-                fit: BoxFit.cover,
-              ),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.5),
+              blurRadius: 20,
+              spreadRadius: 2,
             ),
-            // Gradient Overlay
-            Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withOpacity(0.8),
-                    ],
-                    stops: const [0.6, 1.0],
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(30),
+          child: Stack(
+            children: [
+              // Image
+              Positioned.fill(
+                child: Hero(
+                  tag: 'pet-${pet.id}',
+                  child: Image.network(
+                    pet.imageUrls.first,
+                    fit: BoxFit.cover,
                   ),
                 ),
               ),
-            ),
-            // Info
-            Positioned(
-              bottom: 20,
-              left: 20,
-              right: 20,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        '${pet.name}, ${pet.age}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      _buildVerificationBadge(pet.verificationLevel),
-                    ],
+              // Glow Overlay
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.black.withOpacity(0.1),
+                        Colors.black.withOpacity(0.9),
+                      ],
+                      stops: const [0.4, 1.0],
+                    ),
                   ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Icon(
-                        pet.species == PetSpecies.dog
-                            ? FontAwesomeIcons.dog
-                            : FontAwesomeIcons.cat,
-                        color: Colors.white70,
-                        size: 16,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        pet.breed,
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      if (pet.healthBadges['vacunas'] == true)
-                        _buildHealthChip('Vacunas OK', AppTheme.accentColor),
-                      if (pet.healthBadges['esterilizado'] == true)
-                        _buildHealthChip('Esterilizado', Colors.blue),
-                      _buildHealthChip(
-                        pet.goal == Goal.breeding ? 'Reproducción' : 'Social',
-                        pet.goal == Goal.breeding ? AppTheme.primaryColor : Colors.orange,
-                      ),
-                    ],
-                  ),
-                ],
+                ),
               ),
-            ),
-          ],
+              // Floating Badge (Top Right)
+              if (pet.verificationLevel == VerificationLevel.dnaVerified)
+                Positioned(
+                  top: 20,
+                  right: 20,
+                  child: GlassContainer(
+                    borderRadius: 15,
+                    padding: const EdgeInsets.all(10),
+                    child: const Icon(FontAwesomeIcons.dna, color: Colors.purpleAccent, size: 20),
+                  ),
+                ),
+              // Info Panel
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${pet.name}, ${pet.age}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.location_on, color: Colors.white60, size: 14),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      'A 2.5 km de distancia',
+                                      style: TextStyle(
+                                        color: Colors.white.withOpacity(0.7),
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          const GlassContainer(
+                            borderRadius: 100,
+                            padding: EdgeInsets.all(12),
+                            child: Icon(Icons.info_outline, color: Colors.white),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Wrap(
+                        spacing: 8,
+                        children: [
+                          _buildPremiumChip(
+                            pet.species == PetSpecies.dog ? 'Perro' : 'Gato',
+                            Colors.grey.withOpacity(0.3),
+                          ),
+                          _buildPremiumChip(
+                            pet.goal == Goal.breeding ? 'Reproducción' : 'Social',
+                            AppTheme.primaryColor,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildVerificationBadge(VerificationLevel level) {
-    IconData icon;
-    Color color;
-    switch (level) {
-      case VerificationLevel.declared:
-        return const SizedBox.shrink();
-      case VerificationLevel.inReview:
-        icon = Icons.hourglass_empty;
-        color = Colors.blue;
-        break;
-      case VerificationLevel.verifiedDocs:
-        icon = Icons.verified;
-        color = Colors.green;
-        break;
-      case VerificationLevel.officialRegistry:
-        icon = Icons.stars;
-        color = Colors.amber;
-        break;
-      case VerificationLevel.dnaVerified:
-        icon = FontAwesomeIcons.dna;
-        color = Colors.purple;
-        break;
-    }
-    return Icon(icon, color: color, size: 24);
-  }
-
-  Widget _buildHealthChip(String label, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.8),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white24),
-      ),
+  Widget _buildPremiumChip(String label, Color color) {
+    return GlassContainer(
+      borderRadius: 12,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      color: color,
       child: Text(
         label,
         style: const TextStyle(
           color: Colors.white,
           fontSize: 12,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.bold,
         ),
       ),
     );
