@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/pet_provider.dart';
 import '../theme/app_theme.dart';
 import 'pet_health_screen.dart';
+import 'add_pet_wizard_screen.dart';
 
 class TutorProfileScreen extends StatelessWidget {
   const TutorProfileScreen({super.key});
@@ -28,7 +29,12 @@ class TutorProfileScreen extends StatelessWidget {
                   children: [
                     const Text('Mis Mascotas', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                     TextButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const AddPetWizardScreen()),
+                        );
+                      },
                       icon: const Icon(Icons.add_circle_outline, size: 16),
                       label: const Text('Agregar Mascotas'),
                     ),

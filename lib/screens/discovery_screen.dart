@@ -9,6 +9,8 @@ import '../theme/app_theme.dart';
 import 'pet_profile_screen.dart';
 import 'tutor_profile_screen.dart';
 import 'chat_list_screen.dart';
+import 'discovery_filters_screen.dart';
+import 'match_celebration_screen.dart';
 
 class DiscoveryScreen extends StatefulWidget {
   const DiscoveryScreen({super.key});
@@ -89,7 +91,7 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
                           },
                         ),
                 ),
-                _buildMinimalActionButtons(),
+                _buildMinimalActionButtons(pets),
                 const SizedBox(height: 32),
               ],
             ),
@@ -126,25 +128,43 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
               letterSpacing: -1,
             ),
           ),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ChatListScreen()),
-              );
-            },
-            child: const GlassContainer(
-              shape: BoxShape.circle,
-              padding: EdgeInsets.all(10),
-              child: Icon(Icons.chat_bubble_outline, color: Colors.white, size: 20),
-            ),
+          Row(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const DiscoveryFiltersScreen()),
+                  );
+                },
+                child: const GlassContainer(
+                  shape: BoxShape.circle,
+                  padding: EdgeInsets.all(10),
+                  child: Icon(Icons.tune, color: Colors.white, size: 20),
+                ),
+              ),
+              const SizedBox(width: 12),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ChatListScreen()),
+                  );
+                },
+                child: const GlassContainer(
+                  shape: BoxShape.circle,
+                  padding: EdgeInsets.all(10),
+                  child: Icon(Icons.chat_bubble_outline, color: Colors.white, size: 20),
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  Widget _buildMinimalActionButtons() {
+  Widget _buildMinimalActionButtons(List<Pet> pets) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 48),
       child: Row(
@@ -152,7 +172,20 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
         children: [
           _buildAction(Icons.close, Colors.white60, () => controller.swipe(CardSwiperDirection.left)),
           _buildAction(Icons.star, Colors.blueAccent, () {}),
-          _buildAction(Icons.favorite, AppTheme.primaryColor, () => controller.swipe(CardSwiperDirection.right)),
+          _buildAction(Icons.favorite, AppTheme.primaryColor, () {
+            if (pets.isNotEmpty && activeIndex < pets.length) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MatchCelebrationScreen(
+                    myPet: pets[1], // Representing my pet "Luna"
+                    matchedPet: pets[activeIndex],
+                  ),
+                ),
+              );
+            }
+            controller.swipe(CardSwiperDirection.right);
+          }),
         ],
       ),
     );

@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import 'discovery_screen.dart';
+import 'registration_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -82,9 +83,9 @@ class WelcomeScreen extends StatelessWidget {
       width: double.infinity,
       child: FilledButton(
         onPressed: () {
-          Navigator.pushReplacement(
+          Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const DiscoveryScreen()),
+            MaterialPageRoute(builder: (context) => const RegistrationScreen()),
           );
         },
         style: FilledButton.styleFrom(
