@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:provider/provider.dart';
 import '../providers/pet_provider.dart';
+import '../models/pet.dart';
 import '../widgets/pet_card.dart';
 import '../theme/app_theme.dart';
 import 'pet_profile_screen.dart';

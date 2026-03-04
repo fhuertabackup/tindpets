@@ -117,7 +117,7 @@ class _AddPetWizardScreenState extends State<AddPetWizardScreen> {
                 decoration: BoxDecoration(
                   color: Colors.white10,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.white24, style: BorderStyle.merge(BorderSide.none, BorderSide.none)),
+                  border: Border.all(color: Colors.white10),
                 ),
                 child: const Icon(Icons.add_a_photo_outlined, color: Colors.white38),
               ),
