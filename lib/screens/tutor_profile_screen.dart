@@ -5,6 +5,8 @@ import '../providers/pet_provider.dart';
 import '../theme/app_theme.dart';
 import 'pet_health_screen.dart';
 import 'add_pet_wizard_screen.dart';
+import 'settings_screen.dart';
+import 'welcome_screen.dart';
 
 class TutorProfileScreen extends StatelessWidget {
   const TutorProfileScreen({super.key});
@@ -45,12 +47,12 @@ class TutorProfileScreen extends StatelessWidget {
                 const SizedBox(height: 48),
                 const Text('Configuración y Privacidad', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 16),
-                _buildSettingsTile(Icons.person_outline, 'Ajustes del perfil'),
-                _buildSettingsTile(Icons.security_outlined, 'Privacidad y seguridad'),
-                _buildSettingsTile(Icons.notifications_outlined, 'Notificaciones'),
-                _buildSettingsTile(Icons.help_outline, 'Ayuda y soporte'),
+                _buildSettingsTile(context, Icons.person_outline, 'Ajustes del perfil'),
+                _buildSettingsTile(context, Icons.security_outlined, 'Privacidad y seguridad'),
+                _buildSettingsTile(context, Icons.notifications_outlined, 'Notificaciones'),
+                _buildSettingsTile(context, Icons.help_outline, 'Ayuda y soporte'),
                 const SizedBox(height: 48),
-                _buildLogoutButton(),
+                _buildLogoutButton(context),
               ]),
             ),
           ),
@@ -68,7 +70,10 @@ class TutorProfileScreen extends StatelessWidget {
         onPressed: () => Navigator.pop(context),
       ),
       actions: [
-        IconButton(icon: const Icon(Icons.settings_outlined), onPressed: () {}),
+        IconButton(
+          icon: const Icon(Icons.settings_outlined), 
+          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsScreen(title: 'Ajustes del perfil')))
+        ),
       ],
     );
   }
@@ -151,18 +156,26 @@ class TutorProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSettingsTile(IconData icon, String title) {
+  Widget _buildSettingsTile(BuildContext context, IconData icon, String title) {
     return ListTile(
       leading: Icon(icon, color: Colors.white70),
       title: Text(title, style: const TextStyle(fontSize: 16)),
       trailing: const Icon(Icons.chevron_right, size: 20, color: Colors.white24),
-      onTap: () {},
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsScreen(title: title)));
+      },
     );
   }
 
-  Widget _buildLogoutButton() {
+  Widget _buildLogoutButton(BuildContext context) {
     return OutlinedButton(
-      onPressed: () {},
+      onPressed: () {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+          (route) => false,
+        );
+      },
       style: OutlinedButton.styleFrom(
         foregroundColor: Colors.redAccent,
         side: const BorderSide(color: Colors.redAccent, width: 1),

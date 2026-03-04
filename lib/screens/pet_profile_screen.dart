@@ -1,9 +1,9 @@
 
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../models/pet.dart';
 import '../theme/app_theme.dart';
+import 'edit_pet_profile_screen.dart';
 
 class PetProfileScreen extends StatelessWidget {
   final Pet pet;
@@ -60,10 +60,10 @@ class PetProfileScreen extends StatelessWidget {
       elevation: 0,
       leading: Padding(
         padding: const EdgeInsets.only(left: 16.0),
-        child: Center( // Center Icon in Glass
+        child: Center(
           child: GlassContainer(
             shape: BoxShape.circle,
-            padding: const EdgeInsets.all(10), // Reduced to match icon size
+            padding: const EdgeInsets.all(10),
             child: GestureDetector(
               onTap: () => Navigator.pop(context),
               child: const Icon(Icons.arrow_back_ios_new, size: 18, color: Colors.white),
@@ -75,10 +75,13 @@ class PetProfileScreen extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(right: 16.0),
           child: Center(
-            child: GlassContainer(
-              borderRadius: 50,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: const Text('Edit Profile', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+            child: GestureDetector(
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => EditPetProfileScreen(pet: pet))),
+              child: const GlassContainer(
+                borderRadius: 50,
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Text('Editar Perfil', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+              ),
             ),
           ),
         ),
@@ -154,8 +157,8 @@ class PetProfileScreen extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _buildStatColumn('Energy', 'High'),
-        _buildStatColumn('Age', '${pet.age} y'),
+        _buildStatColumn('Energía', 'Alta'),
+        _buildStatColumn('Edad', '${pet.age} años'),
         _buildStatColumn('Match', '98%'),
       ],
     );
@@ -201,17 +204,17 @@ class PetProfileScreen extends StatelessWidget {
             borderRadius: 100,
             child: const Center(
               child: Text(
-                'Get Start Match',
+                'Comenzar Match',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 0.5),
               ),
             ),
           ),
         ),
         const SizedBox(width: 16),
-        GlassContainer(
+        const GlassContainer(
           shape: BoxShape.circle,
-          padding: const EdgeInsets.all(18),
-          child: const Icon(Icons.mail_outline, color: Colors.white, size: 24),
+          padding: EdgeInsets.all(18),
+          child: Icon(Icons.mail_outline, color: Colors.white, size: 24),
         ),
       ],
     );
