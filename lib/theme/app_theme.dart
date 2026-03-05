@@ -43,24 +43,37 @@ class GlassContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (shape == BoxShape.circle) {
+      return ClipOval(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+          child: _buildContainer(),
+        ),
+      );
+    }
+
     return ClipRRect(
-      borderRadius: shape == BoxShape.circle ? BorderRadius.zero : BorderRadius.circular(borderRadius),
+      borderRadius: BorderRadius.circular(borderRadius),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-        child: Container(
-          padding: padding,
-          decoration: BoxDecoration(
-            shape: shape,
-            color: (color ?? Colors.white).withOpacity(opacity),
-            borderRadius: shape == BoxShape.circle ? null : BorderRadius.circular(borderRadius),
-            border: Border.all(
-              color: Colors.white.withOpacity(0.05),
-              width: 1.0,
-            ),
-          ),
-          child: child,
+        child: _buildContainer(),
+      ),
+    );
+  }
+
+  Widget _buildContainer() {
+    return Container(
+      padding: padding,
+      decoration: BoxDecoration(
+        shape: shape,
+        color: (color ?? Colors.white).withOpacity(opacity),
+        borderRadius: shape == BoxShape.circle ? null : BorderRadius.circular(borderRadius),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.05),
+          width: 1.0,
         ),
       ),
+      child: child,
     );
   }
 }
