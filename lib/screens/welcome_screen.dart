@@ -89,7 +89,7 @@ class WelcomeScreen extends StatelessWidget {
           );
         },
         style: FilledButton.styleFrom(
-          backgroundColor: Colors.blue,
+          backgroundColor: Colors.blueAccent,
           padding: const EdgeInsets.symmetric(vertical: 20),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
         ),
