@@ -26,4 +26,4 @@ dependencies:
   path_provider: ^2.1.1
   intl: ^0.18.1
   uuid: ^4.1.0
-  font_awesome_flutter: ^10.14.0 # Updated to a version that should resolve the IconData issue
+  font_awesome_flutter: ^9.2.0
